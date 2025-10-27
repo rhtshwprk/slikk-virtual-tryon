@@ -7,6 +7,15 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { getProductById } from '@/lib/data';
 
+// Floating dots loader component
+const FloatingDotsLoader = () => (
+  <div className="flex items-center justify-center space-x-2 py-12">
+    <div className="w-3 h-3 bg-black rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+    <div className="w-3 h-3 bg-black rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+    <div className="w-3 h-3 bg-black rounded-full animate-bounce"></div>
+  </div>
+);
+
 export default function ProductDetail() {
   const params = useParams();
   const router = useRouter();
@@ -347,22 +356,34 @@ export default function ProductDetail() {
                     <img src={product.images[0]} alt={product.name} className="w-full h-48 object-cover rounded" />
                   </div>
                 </div>
-                <button 
-                  onClick={handleTryOn}
-                  disabled={loading}
-                  className="w-full bg-black text-white py-3 px-4 text-center font-semibold rounded disabled:opacity-50 hover:bg-gray-800"
-                >
-                  {loading ? 'Processing...' : 'Generate Try-On'}
-                </button>
-                <label className="block text-center text-sm text-gray-600 underline cursor-pointer">
-                  Change photo
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </label>
+                {loading ? (
+                  <div className="bg-gray-50 rounded-lg p-8">
+                    <div className="text-center mb-4">
+                      <p className="text-sm font-semibold text-black mb-2">Generating your try-on...</p>
+                      <p className="text-xs text-gray-600">This may take a moment</p>
+                    </div>
+                    <FloatingDotsLoader />
+                  </div>
+                ) : (
+                  <>
+                    <button 
+                      onClick={handleTryOn}
+                      disabled={loading}
+                      className="w-full bg-black text-white py-3 px-4 text-center font-semibold rounded disabled:opacity-50 hover:bg-gray-800"
+                    >
+                      Generate Try-On
+                    </button>
+                    <label className="block text-center text-sm text-gray-600 underline cursor-pointer">
+                      Change photo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </>
+                )}
               </>
             )}
           </div>

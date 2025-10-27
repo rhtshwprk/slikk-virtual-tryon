@@ -1,6 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { products } from '@/lib/data';
 
 export default function Home() {
@@ -13,18 +16,18 @@ export default function Home() {
             <div className="bg-orange-500 px-2 py-1 rounded">
               <span className="text-white text-xs font-bold">⚡60 MIN</span>
             </div>
-            <span className="text-xl font-bold">Pronk</span>
+            <span className="text-xl font-bold text-black">Slikk</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-2xl">🔍</span>
-            <span className="text-2xl">♡</span>
+            <FontAwesomeIcon icon={faSearch} className="text-xl text-black" />
+            <FontAwesomeIcon icon={faHeart} className="text-xl text-black" />
           </div>
         </div>
       </header>
 
       {/* Product Grid */}
       <div className="px-4 py-6">
-        <h2 className="text-2xl font-bold mb-4">Featured Products</h2>
+        <h2 className="text-2xl font-bold mb-4 text-black">Featured Products</h2>
         <div className="grid grid-cols-2 gap-4">
           {products.map((product) => (
             <Link 
@@ -32,8 +35,8 @@ export default function Home() {
               href={`/products/${product.id}`}
               className="block"
             >
-              <div className="bg-gray-50 rounded-lg overflow-hidden">
-                <div className="relative aspect-square">
+              <div className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="relative aspect-square bg-gray-100">
                   <img
                     src={product.images[0]}
                     alt={product.name}
@@ -43,18 +46,18 @@ export default function Home() {
                     }}
                   />
                   {!product.inStock && (
-                    <div className="absolute top-2 right-2 bg-black text-white px-2 py-1 text-xs rounded">
+                    <div className="absolute top-2 right-2 bg-black text-white px-2 py-1 text-xs font-semibold rounded">
                       Out of Stock
                     </div>
                   )}
                 </div>
                 <div className="p-3">
                   <p className="text-xs text-gray-600 mb-1">{product.brand}</p>
-                  <p className="text-sm font-semibold mb-2 line-clamp-2">{product.name}</p>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-base font-bold">₹{product.price}</span>
-                    <span className="text-xs text-gray-400 line-through">₹{product.originalPrice}</span>
-                    <span className="bg-green-100 text-green-700 px-2 py-0.5 text-xs font-semibold rounded">
+                  <p className="text-sm font-bold text-black mb-2 line-clamp-2">{product.name}</p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-sm font-bold text-black">₹{product.price}</span>
+                    <span className="text-xs text-gray-400 line-through font-semibold">₹{product.originalPrice}</span>
+                    <span className="bg-green-100 text-green-700 px-2 py-0.5 text-xs font-bold rounded">
                       {product.discount}% OFF
                     </span>
                   </div>
