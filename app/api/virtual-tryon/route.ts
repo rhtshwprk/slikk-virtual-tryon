@@ -1,12 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { GoogleAuth } from 'google-auth-library';
 
 const execAsync = promisify(exec);
 
 // For local development, we'll get access tokens using gcloud
 async function getAccessToken(): Promise<string | null> {
-  // Try to get token from gcloud command
+  // For Vercel/production, use service account JSON from environment variable
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    try {
+      const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+      const auth = new GoogleAuth({
+        credentials,
+        scopes: ['https://www.googleapis.com/auth/cloud-platform']
+      });
+      const client = await auth.getClient();
+      const accessToken = await client.getAccessToken();
+      return accessToken.token || null;
+    } catch (error) {
+      console.error('Error getting access token from credentials:', error);
+    }
+  }
+
+  // For local development, try to get token from gcloud command
   try {
     const { stdout } = await execAsync('gcloud auth print-access-token');
     return stdout.trim();

@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faHeart } from '@fortawesome/free-regular-svg-icons';
 import { getProductById } from '@/lib/data';
 
 export default function ProductDetail() {
@@ -11,12 +14,12 @@ export default function ProductDetail() {
   const product = getProductById(productId);
 
   const [selectedSize, setSelectedSize] = useState('S');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showTryOn, setShowTryOn] = useState(false);
   const [userImage, setUserImage] = useState<string | null>(null);
   const [tryOnResult, setTryOnResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'specifications' | 'description'>('specifications');
+  const [showTryOnModal, setShowTryOnModal] = useState(false);
 
   if (!product) {
     return (
@@ -82,6 +85,7 @@ export default function ProductDetail() {
         const resultBase64 = `data:${data.predictions[0].mimeType || 'image/png'};base64,${data.predictions[0].bytesBase64Encoded}`;
         setTryOnResult(resultBase64);
         setShowTryOn(true);
+        setShowTryOnModal(false);
       }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -109,8 +113,8 @@ export default function ProductDetail() {
           <div className="font-bold text-black">{product.brand}</div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-2xl">🔍</span>
-            <span className="text-lg text-black">♡</span>
+            <FontAwesomeIcon icon={faSearch} className="text-xl text-black" />
+            <FontAwesomeIcon icon={faHeart} className="text-xl text-black" />
           </div>
         </div>
       </header>
@@ -120,7 +124,7 @@ export default function ProductDetail() {
         <div className="relative aspect-4/5 bg-gray-100">
           {product?.images?.[0] && (
             <img
-              src={tryOnResult || product.images[currentImageIndex]}
+              src={tryOnResult || product.images[0]}
               alt={product.name}
               className="w-full h-full object-cover"
               onError={(e) => {
@@ -128,84 +132,33 @@ export default function ProductDetail() {
               }}
             />
           )}
-          {currentImageIndex === 0 && !tryOnResult && (
-            <div className="absolute top-4 left-4">
-              <span className="bg-black text-white px-3 py-1 text-xs font-semibold">
-                RELAXED FIT
-              </span>
-            </div>
-          )}
-        </div>
 
-        {/* Try & Buy Button */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white">
-          {!showTryOn ? (
-            <div className="space-y-4">
-              {!userImage ? (
-                <>
-                  <label className="block w-full bg-black text-white py-3 px-4 text-center font-semibold rounded cursor-pointer">
-                    Upload Your Photo
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                  </label>
-                  <button 
-                    onClick={handleTryOn}
-                    className="hidden w-full bg-black text-white py-3 px-4 text-center font-semibold rounded"
-                  >
-                    TRY & BUY
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className="flex gap-2 mb-2">
-                    <img src={userImage} alt="You" className="w-16 h-16 object-cover rounded" />
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold">Ready to try on</p>
-                      <p className="text-xs text-gray-500">Click TRY & BUY to see how you look</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={handleTryOn}
-                    disabled={loading}
-                    className="w-full bg-black text-white py-3 px-4 text-center font-semibold rounded disabled:opacity-50"
-                  >
-                    {loading ? 'Processing...' : 'TRY & BUY'}
-                  </button>
-                  <label className="block text-center text-sm text-gray-600 underline cursor-pointer">
-                    Change photo
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                  </label>
-                </>
-              )}
-            </div>
+          {/* Virtual Try-On Button - Bottom Left Corner */}
+          {tryOnResult ? (
+            <button
+              onClick={() => {
+                setShowTryOn(false);
+                setTryOnResult(null);
+                setUserImage(null);
+                setShowTryOnModal(true);
+              }}
+              className="absolute bottom-4 left-4 bg-green-600 text-white text-xs px-3 py-2 rounded font-semibold hover:bg-green-700 transition-colors"
+            >
+              Try Again
+            </button>
           ) : (
-            <div className="text-center">
-              <p className="text-sm mb-2 text-green-600 font-semibold">Try-On Complete!</p>
-              <button 
-                onClick={() => {
-                  setShowTryOn(false);
-                  setTryOnResult(null);
-                }}
-                className="text-sm underline text-gray-600"
-              >
-                Try another photo
-              </button>
-            </div>
+            <button
+              onClick={() => setShowTryOnModal(true)}
+              className="absolute bottom-4 left-4 bg-black text-white text-xs px-3 py-2 rounded font-semibold hover:bg-gray-800 transition-colors"
+            >
+              VIRTUAL TRY-ON
+            </button>
           )}
         </div>
       </div>
 
       {/* Product Details */}
-      <div className="px-4 py-6 space-y-4">
+      <div className="px-4 py-3 space-y-4">
         {/* Brand and Product Name */}
         <div>
           <p className="text-black text-lg font-bold">{product.brand}</p>
@@ -357,6 +310,64 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+
+      {/* Virtual Try-On Modal */}
+      {showTryOnModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold text-black">Virtual Try-On</h2>
+              <button 
+                onClick={() => setShowTryOnModal(false)}
+                className="text-2xl text-gray-500 hover:text-black"
+              >
+                ×
+              </button>
+            </div>
+
+            {!userImage ? (
+              <label className="block w-full bg-black text-white py-3 px-4 text-center font-semibold rounded cursor-pointer hover:bg-gray-800">
+                Upload Your Photo
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </label>
+            ) : (
+              <>
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-black mb-2">Your Photo</p>
+                    <img src={userImage} alt="You" className="w-full h-48 object-cover rounded" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-black mb-2">Product</p>
+                    <img src={product.images[0]} alt={product.name} className="w-full h-48 object-cover rounded" />
+                  </div>
+                </div>
+                <button 
+                  onClick={handleTryOn}
+                  disabled={loading}
+                  className="w-full bg-black text-white py-3 px-4 text-center font-semibold rounded disabled:opacity-50 hover:bg-gray-800"
+                >
+                  {loading ? 'Processing...' : 'Generate Try-On'}
+                </button>
+                <label className="block text-center text-sm text-gray-600 underline cursor-pointer">
+                  Change photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </label>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
