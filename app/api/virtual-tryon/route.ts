@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       : productImage;
 
     const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
-    const region = process.env.GOOGLE_CLOUD_REGION || 'us-central1';
+    const region = process.env.GOOGLE_CLOUD_REGION || 'asia-south1'; // Mumbai, India for better latency
 
     if (!projectId) {
       return NextResponse.json(

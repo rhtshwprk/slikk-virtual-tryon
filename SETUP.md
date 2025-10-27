@@ -47,10 +47,27 @@ gcloud config set project YOUR_PROJECT_ID
 
 Create a `.env.local` file:
 
+**For India users (recommended):**
+
 ```bash
-GOOGLE_CLOUD_PROJECT_ID=your-actual-project-id
-GOOGLE_CLOUD_REGION=us-central1
+GOOGLE_CLOUD_PROJECT_ID=your-project-id
+GOOGLE_CLOUD_REGION=asia-south1
 ```
+
+**For other regions:**
+
+```bash
+GOOGLE_CLOUD_PROJECT_ID=your-project-id
+GOOGLE_CLOUD_REGION=your-region
+```
+
+Available regions for best latency:
+
+- `asia-south1` - Mumbai, India (recommended for India)
+- `asia-southeast1` - Singapore
+- `asia-east1` - Taiwan
+- `europe-west1` - Belgium
+- `us-central1` - Iowa, USA
 
 ### 4. Enable the Vertex AI API
 

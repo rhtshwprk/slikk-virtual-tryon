@@ -38,9 +38,16 @@ Go to **Settings > Environment Variables** and add these:
 
 ```
 GOOGLE_CLOUD_PROJECT_ID=your-project-id
-GOOGLE_CLOUD_REGION=us-central1
+GOOGLE_CLOUD_REGION=asia-south1
 GOOGLE_APPLICATION_CREDENTIALS={"type":"service_account","project_id":"...","private_key_id":"...","private_key":"...","client_email":"...","client_id":"...","auth_uri":"...","token_uri":"...","auth_provider_x509_cert_url":"...","client_x509_cert_url":"..."}
 ```
+
+**Note:** For India, use `GOOGLE_CLOUD_REGION=asia-south1` (Mumbai) for the lowest latency. Other options:
+
+- `asia-southeast1` (Singapore)
+- `asia-east1` (Taiwan)
+- `europe-west1` (Belgium)
+- `us-central1` (Iowa)
 
 **Important:** For `GOOGLE_APPLICATION_CREDENTIALS`, you need to:
 
@@ -52,7 +59,7 @@ Alternatively, you can just set the JSON content directly:
 
 ```
 GOOGLE_CLOUD_PROJECT_ID=your-project-id-here
-GOOGLE_CLOUD_REGION=us-central1
+GOOGLE_CLOUD_REGION=asia-south1
 GOOGLE_APPLICATION_CREDENTIALS={"type":"service_account"...}
 ```
 
